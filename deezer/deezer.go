@@ -18,8 +18,8 @@ const searchEndpoint = "https://api.deezer.com/search"
 
 const maxSearchEntries = 10
 
-// Search searches the deezer for a keyword
-func Search(keyword string) ([]SearchResult, error) {
+// SearchTrack searches the deezer for a track by keyword
+func SearchTrack(keyword string) ([]SearchResult, error) {
 	// Build the request and do it
 	req, err := http.NewRequest("GET", searchEndpoint, nil)
 	if err != nil {

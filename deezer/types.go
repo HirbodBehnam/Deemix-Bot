@@ -1,9 +1,10 @@
 package deezer
 
 import (
-	"io/ioutil"
+	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -47,17 +48,18 @@ func (d TempDir) Delete() {
 	_ = os.RemoveAll(d.Address)
 }
 
-// GetMusic gets the downloaded music filename from temp dir
-// If there is an error, returns ""
-func (d TempDir) GetMusic() string {
-	dir, err := ioutil.ReadDir(d.Address)
-	if err != nil {
-		return ""
-	}
-	for _, entry := range dir {
-		if !entry.IsDir() {
-			return filepath.Join(d.Address, entry.Name())
+// GetMusics gets the downloaded music filenames from temp dir
+// If there is an error, returns nil
+func (d TempDir) GetMusics() []string {
+	result := make([]string, 0)
+	err := filepath.WalkDir(d.Address, func(path string, d fs.DirEntry, err error) error {
+		if !d.IsDir() && strings.HasSuffix(d.Name(), ".mp3") {
+			result = append(result, path)
 		}
+		return nil
+	})
+	if err != nil {
+		return nil
 	}
-	return ""
+	return result
 }
