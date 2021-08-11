@@ -1,15 +1,21 @@
 package deezer
 
 import (
+	"Deemix-Bot/util"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 )
 
-// SearchResult is the entry of searches
-type SearchResult struct {
+type SearchEntry interface {
+	Append(builder *strings.Builder, index int)
+}
+
+// Track is the entry of track searches
+type Track struct {
 	// The title (name) of the song
 	Title string
 	// The link to the song
@@ -20,6 +26,26 @@ type SearchResult struct {
 	Album string
 	// The duration of music
 	Duration time.Duration
+}
+
+func (t Track) Append(builder *strings.Builder, index int) {
+	builder.WriteString(strconv.Itoa(index + 1))
+	builder.WriteByte('\n')
+	builder.WriteString("Title: ")
+	builder.WriteString(util.EscapeMarkdown(t.Title))
+	builder.WriteByte('\n')
+	builder.WriteString("Album: ")
+	builder.WriteString(util.EscapeMarkdown(t.Album))
+	builder.WriteByte('\n')
+	builder.WriteString("Artist: ")
+	builder.WriteString(util.EscapeMarkdown(t.Artist))
+	builder.WriteByte('\n')
+	builder.WriteString("Link: `")
+	builder.WriteString(t.Link)
+	builder.WriteString("`\n")
+	builder.WriteString("Duration: ")
+	builder.WriteString(t.Duration.String())
+	builder.WriteString("\n\n")
 }
 
 // searchResponse is the response of search
@@ -62,4 +88,36 @@ func (d TempDir) GetMusics() []string {
 		return nil
 	}
 	return result
+}
+
+// AlbumResponse is the album search result
+type AlbumResponse struct {
+	Data []Album `json:"data"`
+}
+
+// Album is a single album in album search
+type Album struct {
+	Title       string `json:"title"`
+	Link        string `json:"link"`
+	TracksCount int    `json:"nb_tracks"`
+	Artist      struct {
+		Name string `json:"name"`
+	} `json:"artist"`
+}
+
+func (a Album) Append(builder *strings.Builder, index int) {
+	builder.WriteString(strconv.Itoa(index + 1))
+	builder.WriteByte('\n')
+	builder.WriteString("Title: ")
+	builder.WriteString(util.EscapeMarkdown(a.Title))
+	builder.WriteByte('\n')
+	builder.WriteString("Tracks Count: ")
+	builder.WriteString(util.EscapeMarkdown(strconv.Itoa(a.TracksCount)))
+	builder.WriteByte('\n')
+	builder.WriteString("Artist: ")
+	builder.WriteString(util.EscapeMarkdown(a.Artist.Name))
+	builder.WriteByte('\n')
+	builder.WriteString("Link: `")
+	builder.WriteString(a.Link)
+	builder.WriteString("`\n\n")
 }

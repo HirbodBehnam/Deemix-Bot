@@ -7,7 +7,6 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -24,7 +23,7 @@ func main() {
 	var err error
 	bot, err = tgbotapi.NewBotAPI(config.Config.BotToken)
 	if err != nil {
-		log.Fatal("Cannot initialize the bot:", err.Error())
+		log.Fatal("Cannot initialize the bot: ", err.Error())
 	}
 	log.Println("Deemix Bot v" + config.Version)
 	log.Println("Bot authorized on account", bot.Self.UserName)
@@ -48,6 +47,8 @@ func main() {
 				_, _ = bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, config.StartMessage))
 			case "about":
 				_, _ = bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, config.AboutMessage))
+			case "album":
+				go processAlbumSearch(update.Message.CommandArguments(), update.Message.Chat.ID)
 			}
 			continue
 		}
@@ -61,50 +62,8 @@ func ProcessUpdate(text string, chatID int64) {
 	if util.IsUrl(text) {
 		processMusic(text, chatID)
 	} else {
-		processSearch(text, chatID)
+		processTrackSearch(text, chatID)
 	}
-}
-
-// processSearch searches a keyword in deezer
-func processSearch(text string, chatID int64) {
-	// Get the result from deezer
-	search, err := deezer.SearchTrack(text)
-	if err != nil {
-		_, _ = bot.Send(tgbotapi.NewMessage(chatID, "Cannot search the keyword :|"))
-		log.Printf("cannot search keyword: %s\n", err)
-		return
-	}
-	// Check empty search results
-	if len(search) == 0 {
-		_, _ = bot.Send(tgbotapi.NewMessage(chatID, "No match found for this keyword!"))
-		return
-	}
-	// Create the result string
-	var resultString strings.Builder
-	resultString.Grow(1024 * 2) // max chars in telegram message / 2
-	for i, entry := range search {
-		resultString.WriteString(strconv.Itoa(i + 1))
-		resultString.WriteByte('\n')
-		resultString.WriteString("Title: ")
-		resultString.WriteString(util.EscapeMarkdown(entry.Title))
-		resultString.WriteByte('\n')
-		resultString.WriteString("Album: ")
-		resultString.WriteString(util.EscapeMarkdown(entry.Album))
-		resultString.WriteByte('\n')
-		resultString.WriteString("Artist: ")
-		resultString.WriteString(util.EscapeMarkdown(entry.Artist))
-		resultString.WriteByte('\n')
-		resultString.WriteString("Link: `")
-		resultString.WriteString(entry.Link)
-		resultString.WriteString("`\n")
-		resultString.WriteString("Duration: ")
-		resultString.WriteString(entry.Duration.String())
-		resultString.WriteString("\n\n")
-	}
-	// Now send the message
-	msg := tgbotapi.NewMessage(chatID, resultString.String())
-	msg.ParseMode = "MarkdownV2"
-	_, _ = bot.Send(msg)
 }
 
 // processMusic tries to download a music using deemix
@@ -130,4 +89,47 @@ func processMusic(text string, chatID int64) {
 			_, _ = bot.Send(tgbotapi.NewMessage(chatID, "Cannot upload your music"))
 		}
 	}
+}
+
+// processTrackSearch searches a keyword in deezer tracks
+func processTrackSearch(text string, chatID int64) {
+	// Get the result from deezer
+	search, err := deezer.SearchTrack(text)
+	if err != nil {
+		_, _ = bot.Send(tgbotapi.NewMessage(chatID, "Cannot search the keyword :|"))
+		log.Printf("cannot search keyword: %s\n", err)
+		return
+	}
+	// Send result
+	sendSearchResult(chatID, search)
+}
+
+func processAlbumSearch(text string, chatID int64) {
+	// Get the result from deezer
+	search, err := deezer.SearchAlbum(text)
+	if err != nil {
+		_, _ = bot.Send(tgbotapi.NewMessage(chatID, "Cannot search the keyword :|"))
+		log.Printf("cannot search keyword: %s\n", err)
+		return
+	}
+	// Send result
+	sendSearchResult(chatID, search)
+}
+
+func sendSearchResult(chatID int64, data []deezer.SearchEntry) {
+	// Check empty search results
+	if len(data) == 0 {
+		_, _ = bot.Send(tgbotapi.NewMessage(chatID, "No match found for this keyword!"))
+		return
+	}
+	// Create the result string
+	var resultString strings.Builder
+	resultString.Grow(1024 * 2) // max chars in telegram message / 2
+	for i, entry := range data {
+		entry.Append(&resultString, i)
+	}
+	// Now send the message
+	msg := tgbotapi.NewMessage(chatID, resultString.String())
+	msg.ParseMode = "MarkdownV2"
+	_, _ = bot.Send(msg)
 }
