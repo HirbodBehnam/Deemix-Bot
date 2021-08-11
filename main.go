@@ -123,37 +123,11 @@ func processMusic(text string, chatID int64) {
 		return
 	}
 	// Upload the file
-	for _, toSend := range getMusicsMessages(chatID, filenames) {
-		_, err = bot.Send(toSend)
+	for _, toSend := range filenames {
+		_, err = bot.Send(tgbotapi.NewAudio(chatID, toSend))
 		if err != nil {
 			log.Printf("cannot upload music: %s\n", err)
 			_, _ = bot.Send(tgbotapi.NewMessage(chatID, "Cannot upload your music"))
 		}
 	}
-}
-
-func getMusicsMessages(chatID int64, filenames []string) []tgbotapi.Chattable {
-	// If there is only one music, use newAudio
-	if len(filenames) == 1 {
-		return []tgbotapi.Chattable{tgbotapi.NewAudio(chatID, filenames[0])}
-	}
-	// Otherwise, create album for all of them
-	result := make([]tgbotapi.Chattable, 0, len(filenames)/10+1)
-	var tempFilenames []interface{}
-	for i, filename := range filenames {
-		if i%10 == 0 {
-			if i != 0 {
-				result = append(result, tgbotapi.NewMediaGroup(chatID, tempFilenames))
-			}
-			tempFilenames = make([]interface{}, 0, 10)
-		}
-		tempFilenames = append(tempFilenames, tgbotapi.NewAudio(chatID, tgbotapi.NewInputMediaAudio(filename)))
-	}
-	// For the last one, we should use single audio track for 1 audio
-	if len(tempFilenames) == 1 {
-		result = append(result, tgbotapi.NewAudio(chatID, tempFilenames[0].(tgbotapi.InputMediaAudio).Media))
-	} else if len(tempFilenames) > 1 {
-		result = append(result, tgbotapi.NewMediaGroup(chatID, tempFilenames))
-	}
-	return result
 }
