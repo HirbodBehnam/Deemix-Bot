@@ -6,11 +6,24 @@ import (
 	"os"
 )
 
-const Version = "0.0.0"
+const Version = "1.0.0"
 
-const StartMessage = "Send the deezer or spotify link to download the track.\nAlso send the name of the song to search it."
+const StartMessage = "Apparently, you were worthy enough that you can use this bot! Use /help for more info"
 
-const AboutMessage = "Deemix Downloader Bot v" + Version + "\nDeemix: https://www.reddit.com/r/deemix/\nhttps://t.me/deemixbuildbot"
+const HelpMessage = "Send the deezer or spotify link to download the track.\n" +
+	"Also send the name of the song to search it on deezer.\n" +
+	"You might want to use the /album command to search for albums"
+
+const AboutMessage = "Deemix Downloader Bot v" + Version + "\n" +
+	"Deemix: https://www.reddit.com/r/deemix/\n" +
+	"https://t.me/deemixbuildbot\n" +
+	"Bot By Hirbod Behnam\n" +
+	"Bot Source: https://github.com/HirbodBehnam/Deemix-Bot"
+
+const AlbumMessageHelp = "To search for an album, use the /album command with the name you want to search as it's arguments\n" +
+	"For example `/album Doom Soundtrack` searches for \"Doom Soundtrack\" on Deezer"
+
+const MarkdownStyle = "MarkdownV2"
 
 // Config is the list of configs of the bot and deemix
 var Config struct {

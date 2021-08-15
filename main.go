@@ -47,8 +47,16 @@ func main() {
 				_, _ = bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, config.StartMessage))
 			case "about":
 				_, _ = bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, config.AboutMessage))
+			case "help":
+				_, _ = bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, config.HelpMessage))
 			case "album":
-				go processAlbumSearch(update.Message.CommandArguments(), update.Message.Chat.ID)
+				args := update.Message.CommandArguments()
+				if args == "" {
+					msg := tgbotapi.NewMessage(update.Message.Chat.ID, config.AlbumMessageHelp)
+					msg.ParseMode = config.MarkdownStyle
+					_, _ = bot.Send(msg)
+				}
+				go processAlbumSearch(args, update.Message.Chat.ID)
 			}
 			continue
 		}
@@ -142,6 +150,6 @@ func sendSearchResult(chatID int64, data []deezer.SearchEntry) {
 	}
 	// Now send the message
 	msg := tgbotapi.NewMessage(chatID, resultString.String())
-	msg.ParseMode = "MarkdownV2"
+	msg.ParseMode = config.MarkdownStyle
 	_, _ = bot.Send(msg)
 }
