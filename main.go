@@ -68,10 +68,19 @@ func ProcessUpdate(text string, chatID int64) {
 
 // processMusic tries to download a music using deemix
 func processMusic(text string, chatID int64) {
+	// Process report
+	msg, err := bot.Send(tgbotapi.NewMessage(chatID, "Searching and downloading..."))
+	if err != nil {
+		return
+	}
+	defer func(id int) {
+		_, _ = bot.Send(tgbotapi.NewDeleteMessage(chatID, id))
+	}(msg.MessageID)
 	// Download the music
 	path, err := deezer.Download(text)
 	if err != nil {
 		_, _ = bot.Send(tgbotapi.NewMessage(chatID, "Cannot download the music"))
+		log.Printf("cannot download music: %s\n", err)
 		return
 	}
 	defer path.Delete()
@@ -82,6 +91,7 @@ func processMusic(text string, chatID int64) {
 		return
 	}
 	// Upload the file
+	_, _ = bot.Send(tgbotapi.NewEditMessageText(chatID, msg.MessageID, "Uploading music..."))
 	for _, toSend := range filenames {
 		_, err = bot.Send(tgbotapi.NewAudio(chatID, toSend))
 		if err != nil {
@@ -104,6 +114,7 @@ func processTrackSearch(text string, chatID int64) {
 	sendSearchResult(chatID, search)
 }
 
+// processAlbumSearch searches the deezer for an album
 func processAlbumSearch(text string, chatID int64) {
 	// Get the result from deezer
 	search, err := deezer.SearchAlbum(text)
@@ -116,6 +127,7 @@ func processAlbumSearch(text string, chatID int64) {
 	sendSearchResult(chatID, search)
 }
 
+// sendSearchResult sends the search result to user
 func sendSearchResult(chatID int64, data []deezer.SearchEntry) {
 	// Check empty search results
 	if len(data) == 0 {
