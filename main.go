@@ -3,6 +3,7 @@ package main
 import (
 	"Deemix-Bot/config"
 	"Deemix-Bot/deezer"
+	"Deemix-Bot/music"
 	"Deemix-Bot/util"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
@@ -102,11 +103,30 @@ func processMusic(text string, chatID int64) {
 	// Upload the file
 	_, _ = bot.Send(tgbotapi.NewEditMessageText(chatID, msg.MessageID, "Uploading music..."))
 	for _, toSend := range filenames {
-		_, err = bot.Send(tgbotapi.NewAudio(chatID, toSend))
-		if err != nil {
-			log.Printf("cannot upload music: %s\n", err)
-			_, _ = bot.Send(tgbotapi.NewMessage(chatID, "Cannot upload your music"))
+		sendMusic(chatID, toSend)
+	}
+}
+
+// sendMusic sends a music file in chat
+func sendMusic(chatID int64, path string) {
+	// Create the message
+	msg := tgbotapi.NewAudio(chatID, path)
+	// Get the metadata if possible
+	if metadata, err := music.GetMusicMetadata(path); err == nil {
+		msg.Title = metadata.Name
+		msg.Performer = metadata.Artist
+		if metadata.Picture != nil {
+			msg.Thumb = tgbotapi.FileBytes{
+				Name:  "thumb.jpg",
+				Bytes: metadata.Picture,
+			}
 		}
+	}
+	// Send the message
+	_, err := bot.Send(msg)
+	if err != nil {
+		log.Printf("cannot upload music: %s\n", err)
+		_, _ = bot.Send(tgbotapi.NewMessage(chatID, "Cannot upload your music"))
 	}
 }
 
