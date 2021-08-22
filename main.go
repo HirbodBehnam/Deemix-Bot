@@ -55,6 +55,7 @@ func main() {
 					msg := tgbotapi.NewMessage(update.Message.Chat.ID, config.AlbumMessageHelp)
 					msg.ParseMode = config.MarkdownStyle
 					_, _ = bot.Send(msg)
+					continue
 				}
 				go processAlbumSearch(args, update.Message.Chat.ID)
 			}
