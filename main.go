@@ -115,6 +115,7 @@ func sendMusic(chatID int64, path string) {
 	if metadata, err := music.GetMusicMetadata(path); err == nil {
 		msg.Title = metadata.Name
 		msg.Performer = metadata.Artist
+		msg.Duration = metadata.DurationSeconds
 		if metadata.Picture != nil {
 			msg.Thumb = tgbotapi.FileBytes{
 				Name:  "thumb.jpg",
