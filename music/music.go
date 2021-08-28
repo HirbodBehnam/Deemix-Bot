@@ -57,7 +57,7 @@ func GetMusicMetadata(path string) (Metadata, error) {
 	}
 	// Get duration if needed
 	var durationSeconds int
-	if stat, err := file.Stat(); err != nil && stat.Size() >= durationNeededSize {
+	if stat, err := file.Stat(); err == nil && stat.Size() >= durationNeededSize {
 		var stdout bytes.Buffer
 		cmd := exec.Command("ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", path)
 		cmd.Stdout = &stdout
