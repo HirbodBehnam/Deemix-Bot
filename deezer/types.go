@@ -71,7 +71,9 @@ type TempDir struct {
 
 // Delete deletes the temporary directory
 func (d TempDir) Delete() {
-	_ = os.RemoveAll(d.Address)
+	if d.Address != "" {
+		_ = os.RemoveAll(d.Address)
+	}
 }
 
 // GetMusics gets the downloaded music filenames from temp dir

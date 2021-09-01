@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-const Version = "1.2.0"
+const Version = "1.2.1"
 
 const StartMessage = "Apparently, you were worthy enough that you can use this bot! Use /help for more info"
 
@@ -56,6 +56,9 @@ func LoadConfig(location string) {
 
 // CheckAuthorizedUser checks if userId is available in users map and is allowed to use the bot
 func CheckAuthorizedUser(userId int64) bool {
+	if len(users) == 0 { // public bot
+		return true
+	}
 	_, exists := users[userId]
 	return exists
 }
