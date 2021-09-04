@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-const Version = "1.2.1"
+const Version = "1.2.2"
 
 const StartMessage = "Apparently, you were worthy enough that you can use this bot! Use /help for more info"
 
@@ -21,7 +21,7 @@ const AboutMessage = "Deemix Downloader Bot v" + Version + "\n" +
 	"Bot Source: https://github.com/HirbodBehnam/Deemix-Bot"
 
 const AlbumMessageHelp = "To search for an album, use the /album command with the name you want to search as it's arguments\n" +
-	"For example `/album Doom Soundtrack` (without mono space) searches for \"Doom Soundtrack\" on Deezer"
+	"For example `/album Doom Soundtrack` \\(without mono space\\) searches for \"Doom Soundtrack\" on Deezer"
 
 const MarkdownStyle = "MarkdownV2"
 

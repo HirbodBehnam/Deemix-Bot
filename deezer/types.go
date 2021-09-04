@@ -40,11 +40,11 @@ func (t Track) Append(builder *strings.Builder, index int) {
 	builder.WriteString("Artist: ")
 	builder.WriteString(util.EscapeMarkdown(t.Artist))
 	builder.WriteByte('\n')
-	builder.WriteString("Link: `")
-	builder.WriteString(t.Link)
-	builder.WriteString("`\n")
 	builder.WriteString("Duration: ")
 	builder.WriteString(t.Duration.String())
+	builder.WriteString("`\n")
+	builder.WriteString("Link: `")
+	builder.WriteString(t.Link)
 	builder.WriteString("\n\n")
 }
 
