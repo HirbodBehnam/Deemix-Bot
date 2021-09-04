@@ -17,7 +17,6 @@ func StartBot() {
 	}
 	log.Println("Deemix Bot v" + config.Version)
 	log.Println("Bot authorized on account", bot.Self.UserName)
-	// Pre-loading some stuff
 	// Get updates
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60

@@ -47,10 +47,10 @@ func (t Track) Append(builder *strings.Builder, index int) {
 	builder.WriteByte('\n')
 	builder.WriteString("Duration: ")
 	builder.WriteString(t.Duration.String())
-	builder.WriteString("`\n")
+	builder.WriteByte('\n')
 	builder.WriteString("Link: `")
 	builder.WriteString(t.Link)
-	builder.WriteString("\n\n")
+	builder.WriteString("`\n\n")
 }
 
 func (t Track) Article() tgbotapi.InlineQueryResultArticle {
