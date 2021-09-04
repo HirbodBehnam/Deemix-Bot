@@ -36,7 +36,7 @@ func SearchTrack(keyword string) ([]SearchEntry, error) {
 	if err != nil {
 		return nil, err
 	}
-	var respRaw searchResponse
+	var respRaw trackSearchResponse
 	err = json.NewDecoder(resp.Body).Decode(&respRaw)
 	_ = resp.Body.Close()
 	if err != nil {
@@ -53,6 +53,7 @@ func SearchTrack(keyword string) ([]SearchEntry, error) {
 			Link:     entry.Link,
 			Artist:   entry.Artist.Name,
 			Album:    entry.Album.Title,
+			AlbumPic: entry.Album.Cover,
 			Duration: time.Second * time.Duration(entry.Duration),
 		})
 	}

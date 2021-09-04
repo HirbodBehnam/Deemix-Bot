@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-const Version = "1.2.2"
+const Version = "1.3.0"
 
 const StartMessage = "Apparently, you were worthy enough that you can use this bot! Use /help for more info"
 
@@ -23,7 +23,8 @@ const AboutMessage = "Deemix Downloader Bot v" + Version + "\n" +
 const AlbumMessageHelp = "To search for an album, use the /album command with the name you want to search as it's arguments\n" +
 	"For example `/album Doom Soundtrack` \\(without mono space\\) searches for \"Doom Soundtrack\" on Deezer"
 
-const MarkdownStyle = "MarkdownV2"
+const SearchHelpMessage = "You can search using inline queries; Just press one of the buttons below and start typing the keyword you are looking for; " +
+	"Then, just press on one of them and it will send the link to bot. Then the bot will start downloading it."
 
 // Config is the list of configs of the bot and deemix
 var Config struct {

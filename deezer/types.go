@@ -2,6 +2,8 @@ package deezer
 
 import (
 	"Deemix-Bot/util"
+	"Deemix-Bot/util/rng"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -12,6 +14,7 @@ import (
 
 type SearchEntry interface {
 	Append(builder *strings.Builder, index int)
+	Article() tgbotapi.InlineQueryResultArticle
 }
 
 // Track is the entry of track searches
@@ -24,6 +27,8 @@ type Track struct {
 	Artist string
 	// The album name
 	Album string
+	// Url to album pic
+	AlbumPic string
 	// The duration of music
 	Duration time.Duration
 }
@@ -48,8 +53,15 @@ func (t Track) Append(builder *strings.Builder, index int) {
 	builder.WriteString("\n\n")
 }
 
-// searchResponse is the response of search
-type searchResponse struct {
+func (t Track) Article() tgbotapi.InlineQueryResultArticle {
+	row := tgbotapi.NewInlineQueryResultArticle(rng.QueryToken(), t.Title, t.Link)
+	row.Description = "Album: " + t.Album + "\nArtist: " + t.Artist
+	row.ThumbURL = t.AlbumPic
+	return row
+}
+
+// trackSearchResponse is the response of search
+type trackSearchResponse struct {
 	Data []struct {
 		Title    string `json:"title"`
 		Link     string `json:"link"`
@@ -59,6 +71,7 @@ type searchResponse struct {
 		} `json:"artist"`
 		Album struct {
 			Title string `json:"title"`
+			Cover string `json:"cover_medium"`
 		} `json:"album"`
 	} `json:"data"`
 }
@@ -99,12 +112,13 @@ type AlbumResponse struct {
 
 // Album is a single album in album search
 type Album struct {
-	Title       string `json:"title"`
-	Link        string `json:"link"`
-	TracksCount int    `json:"nb_tracks"`
-	Artist      struct {
+	Title  string `json:"title"`
+	Link   string `json:"link"`
+	Cover  string `json:"cover_medium"`
+	Artist struct {
 		Name string `json:"name"`
 	} `json:"artist"`
+	TracksCount int `json:"nb_tracks"`
 }
 
 func (a Album) Append(builder *strings.Builder, index int) {
@@ -122,4 +136,11 @@ func (a Album) Append(builder *strings.Builder, index int) {
 	builder.WriteString("Link: `")
 	builder.WriteString(a.Link)
 	builder.WriteString("`\n\n")
+}
+
+func (a Album) Article() tgbotapi.InlineQueryResultArticle {
+	row := tgbotapi.NewInlineQueryResultArticle(rng.QueryToken(), a.Title, a.Link)
+	row.Description = "Artist: " + a.Artist.Name + "\nTracks: " + strconv.Itoa(a.TracksCount)
+	row.ThumbURL = a.Cover
+	return row
 }
