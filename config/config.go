@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-const Version = "1.3.0"
+const Version = "1.3.1"
 
 const StartMessage = "Apparently, you were worthy enough that you can use this bot! Use /help for more info"
 

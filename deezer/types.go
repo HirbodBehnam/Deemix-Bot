@@ -48,7 +48,7 @@ func (t Track) Append(builder *strings.Builder, index int) {
 	builder.WriteString("Duration: ")
 	builder.WriteString(t.Duration.String())
 	builder.WriteByte('\n')
-	builder.WriteString("Link: `")
+	builder.WriteString("Link:\n`")
 	builder.WriteString(t.Link)
 	builder.WriteString("`\n\n")
 }
@@ -133,7 +133,7 @@ func (a Album) Append(builder *strings.Builder, index int) {
 	builder.WriteString("Artist: ")
 	builder.WriteString(util.EscapeMarkdown(a.Artist.Name))
 	builder.WriteByte('\n')
-	builder.WriteString("Link: `")
+	builder.WriteString("Link:\n`")
 	builder.WriteString(a.Link)
 	builder.WriteString("`\n\n")
 }
