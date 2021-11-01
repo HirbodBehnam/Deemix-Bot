@@ -24,9 +24,12 @@ func (ZSpotify) Download(u string) (*TempDir, error) {
 	result := &TempDir{Address: dirName}
 	// Add the files to this path needed for zspotify
 	configBytes, _ := json.Marshal(zspotifyConfig{
-		RootPath:        dirName,
-		RootPathPodcast: dirName,
-		DownloadFormat:  "mp3",
+		RootPath:          dirName,
+		RootPodcastPath:   dirName,
+		DownloadFormat:    "mp3",
+		AntiBanWaitTime:   10,
+		SkipExistingFiles: true,
+		ChunkSize:         50000,
 	})
 	_ = os.WriteFile(path.Join(dirName, "credentials.json"), config.Config.ZSpotifyCredentials, 0666)
 	_ = os.WriteFile(path.Join(dirName, "zs_config.json"), configBytes, 0666)
@@ -46,7 +49,14 @@ func (ZSpotify) Download(u string) (*TempDir, error) {
 }
 
 type zspotifyConfig struct {
-	RootPath        string `json:"ROOT_PATH"`
-	RootPathPodcast string `json:"ROOT_PODCAST_PATH"`
-	DownloadFormat  string `json:"DOWNLOAD_FORMAT"`
+	RootPath          string `json:"ROOT_PATH"`
+	RootPodcastPath   string `json:"ROOT_PODCAST_PATH"`
+	SkipExistingFiles bool   `json:"SKIP_EXISTING_FILES"`
+	DownloadFormat    string `json:"DOWNLOAD_FORMAT"`
+	ForcePremium      bool   `json:"FORCE_PREMIUM"`
+	AntiBanWaitTime   int    `json:"ANTI_BAN_WAIT_TIME"`
+	OverrideAutoWait  bool   `json:"OVERRIDE_AUTO_WAIT"`
+	ChunkSize         int    `json:"CHUNK_SIZE"`
+	SplitAlbumDiscs   bool   `json:"SPLIT_ALBUM_DISCS"`
+	DownloadRealTime  bool   `json:"DOWNLOAD_REAL_TIME"`
 }

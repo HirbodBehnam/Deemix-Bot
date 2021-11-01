@@ -62,7 +62,10 @@ func LoadConfig(location string) {
 	// Check is user has ZSpotify
 	if len(Config.ZSpotifyCredentials) != 0 {
 		_, err = exec.LookPath("zspotify")
-		HasZSpotify = err == nil
+		if err == nil {
+			HasZSpotify = true
+			log.Println("Detected zspotify!")
+		}
 	}
 }
 
