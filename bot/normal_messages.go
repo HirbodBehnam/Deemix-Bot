@@ -1,15 +1,14 @@
 package bot
 
 import (
-	"Deemix-Bot/deezer"
 	"Deemix-Bot/music"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"strings"
 )
 
-// processMusic tries to download a music using deemix
-func processMusic(text string, chatID int64) {
+// processMusic tries to download a music
+func processMusic(text string, chatID int64, downloader music.Downloader) {
 	// Process report
 	msg, err := bot.Send(tgbotapi.NewMessage(chatID, "Searching and downloading..."))
 	if err != nil {
@@ -19,7 +18,7 @@ func processMusic(text string, chatID int64) {
 		_, _ = bot.Send(tgbotapi.NewDeleteMessage(chatID, id))
 	}(msg.MessageID)
 	// Download the music
-	path, err := deezer.Download(text)
+	path, err := downloader.Download(text)
 	if err != nil {
 		_, _ = bot.Send(tgbotapi.NewMessage(chatID, "Cannot download the music"))
 		log.Printf("cannot download music: %s\n", err)
@@ -66,7 +65,7 @@ func sendMusic(chatID int64, path string) {
 // processTrackSearch searches a keyword in deezer tracks
 func processTrackSearch(text string, chatID int64) {
 	// Get the result from deezer
-	search, err := deezer.SearchTrack(text)
+	search, err := music.SearchTrack(text)
 	// Send result
 	sendSearchResult(chatID, search, err)
 }
@@ -74,13 +73,13 @@ func processTrackSearch(text string, chatID int64) {
 // processAlbumSearch searches the deezer for an album
 func processAlbumSearch(text string, chatID int64) {
 	// Get the result from deezer
-	search, err := deezer.SearchAlbum(text)
+	search, err := music.SearchAlbum(text)
 	// Send result
 	sendSearchResult(chatID, search, err)
 }
 
 // sendSearchResult sends the search result to user
-func sendSearchResult(chatID int64, data []deezer.SearchEntry, err error) {
+func sendSearchResult(chatID int64, data []music.SearchEntry, err error) {
 	// At first check the error
 	if err != nil {
 		_, _ = bot.Send(tgbotapi.NewMessage(chatID, "Cannot search the keyword :|"))

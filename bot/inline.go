@@ -1,7 +1,7 @@
 package bot
 
 import (
-	"Deemix-Bot/deezer"
+	"Deemix-Bot/music"
 	"Deemix-Bot/util/rng"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
@@ -26,18 +26,18 @@ func processInlineSearch(ID, text string) {
 
 // processInlineTrackSearch searches the deezer for a track and answers the callback
 func processInlineTrackSearch(ID, track string) {
-	search, err := deezer.SearchTrack(track)
+	search, err := music.SearchTrack(track)
 	answerInlineSearch(ID, search, err)
 }
 
 // processInlineAlbumSearch searches the deezer for an album and answers the callback
 func processInlineAlbumSearch(ID, album string) {
-	search, err := deezer.SearchAlbum(album)
+	search, err := music.SearchAlbum(album)
 	answerInlineSearch(ID, search, err)
 }
 
 // answerInlineSearch answers a callback query
-func answerInlineSearch(ID string, data []deezer.SearchEntry, err error) {
+func answerInlineSearch(ID string, data []music.SearchEntry, err error) {
 	// At first check the error
 	if err != nil {
 		answerInlineQuery(ID, []interface{}{

@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"os/exec"
 )
 
-const Version = "1.3.1"
+const Version = "1.4.0-Beta"
 
 const StartMessage = "Apparently, you were worthy enough that you can use this bot! Use /help for more info"
 
@@ -28,6 +29,8 @@ const SearchHelpMessage = "You can search using inline queries; Just press one o
 
 // Config is the list of configs of the bot and deemix
 var Config struct {
+	// ZSpotifyCredentials is the file of `credentials.json` in raw json
+	ZSpotifyCredentials json.RawMessage `json:"zspotify_credentials"`
 	// Your telegram bot token
 	BotToken string `json:"bot_token"`
 	// Authorized users to use this bot. Use @myidbot to get your ID
@@ -36,6 +39,9 @@ var Config struct {
 
 // Private map to check authorized users
 var users map[int64]struct{}
+
+// HasZSpotify indicates if user has spotify
+var HasZSpotify = false
 
 // LoadConfig loads the config file from a location
 func LoadConfig(location string) {
@@ -53,6 +59,11 @@ func LoadConfig(location string) {
 		users[user] = struct{}{}
 	}
 	Config.Users = nil
+	// Check is user has ZSpotify
+	if len(Config.ZSpotifyCredentials) != 0 {
+		_, err = exec.LookPath("zspotify")
+		HasZSpotify = err == nil
+	}
 }
 
 // CheckAuthorizedUser checks if userId is available in users map and is allowed to use the bot
