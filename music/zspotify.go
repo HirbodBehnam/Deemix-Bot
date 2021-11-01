@@ -24,12 +24,11 @@ func (ZSpotify) Download(u string) (*TempDir, error) {
 	result := &TempDir{Address: dirName}
 	// Add the files to this path needed for zspotify
 	configBytes, _ := json.Marshal(zspotifyConfig{
-		RootPath:          dirName,
-		RootPodcastPath:   dirName,
-		DownloadFormat:    "mp3",
-		AntiBanWaitTime:   10,
-		SkipExistingFiles: true,
-		ChunkSize:         50000,
+		RootPath:        dirName,
+		RootPodcastPath: dirName,
+		DownloadFormat:  "mp3",
+		AntiBanWaitTime: 10, // you can change this value if you want
+		ChunkSize:       50000,
 	})
 	_ = os.WriteFile(path.Join(dirName, "credentials.json"), config.Config.ZSpotifyCredentials, 0666)
 	_ = os.WriteFile(path.Join(dirName, "zs_config.json"), configBytes, 0666)
