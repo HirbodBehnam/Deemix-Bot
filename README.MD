@@ -32,6 +32,8 @@ The config file contains two fields:
 
 #### Making Spotify links work with Deemix
 
+*Note:* This step is needed only if you wish to not use the ZSpotify.
+
 If you want to make deemix accept spotify links, you have to create this file:
 `~/.config/deemix/spotify/settings.json`. The contents of the file must look like this:
 
@@ -45,22 +47,16 @@ If you want to make deemix accept spotify links, you have to create this file:
 
 #### ZSpotify Config
 
-Configuring ZSpotify at the moment is pretty fucking hard. So at first, you have to clone the ZSpotify repo. Then create
-a file named `zspotify` and put these lines in it:
+Configuring ZSpotify at the moment is kinda hard. So at first, you have to clone the ZSpotify repo. Then create a file
+named `zspotify` and put these lines in it:
 
 ```bash
 #!/bin/bash
-python3.9 /opt/zspotify/zspotify "$@"
+python3.9 /opt/zspotify/zspotify $@
 ```
 
-You can change the ZSpotify path or python version. Then make the script executable with `chmod +x zspotify` and place
-it somewhere in your path. Next go to the cloned version of ZSpotify. There are two files which you need to
-edit; `const.py` and `zspotify.py`. At first, open the `const.py` and change
-the `CONFIG_FILE_PATH = '../zs_config.json'` line to `CONFIG_FILE_PATH = 'zs_config.json'`. After open `zspotify.py` and
-look for the `load_config` function. Change the `true_config_file_path = os.path.join(app_dir, CONFIG_FILE_PATH)` file
-to `true_config_file_path = CONFIG_FILE_PATH`. Save and now you can use this bot!
-
-<sub><sup>This help was written for ZSpotify commit `76f4089`</sup></sub>
+After, run `zspotify -s` and fill the account credentials for the first time. After that it should not ask for passwords
+anymore.
 
 ## How it works?
 
