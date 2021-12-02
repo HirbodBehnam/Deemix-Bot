@@ -17,11 +17,10 @@ jobs:
             goos: darwin
     steps:
       - uses: actions/checkout@v2
-      - uses: wangyoucao577/go-release-action@v1.18
+      - uses: wangyoucao577/go-release-action@v1.22
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
-          goversion: "https://golang.org/dl/go1.17.linux-amd64.tar.gz"
           md5sum: FALSE
           extra_files: config/config.json
