@@ -41,7 +41,7 @@ func processMusic(text string, chatID int64, downloader music.Downloader) {
 // sendMusic sends a music file in chat
 func sendMusic(chatID int64, path string) {
 	// Create the message
-	msg := tgbotapi.NewAudio(chatID, path)
+	msg := tgbotapi.NewAudio(chatID, tgbotapi.FilePath(path))
 	// Get the metadata if possible
 	if metadata, err := music.GetMusicMetadata(path); err == nil {
 		msg.Title = metadata.Name

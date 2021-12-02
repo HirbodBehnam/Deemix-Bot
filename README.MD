@@ -58,6 +58,8 @@ python3.9 /opt/zspotify/zspotify $@
 After, run `zspotify -s` and fill the account credentials for the first time. After that it should not ask for passwords
 anymore.
 
+<sub><sup>This help was written for ZSpotify commit `606125d`</sup></sub>
+
 ## How it works?
 
 This bot does not download anything from deezer or spotify itself; Instead, it simply executes `deemix` or `zspotify` in
