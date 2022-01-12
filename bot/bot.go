@@ -77,11 +77,15 @@ func StartBot() {
 // processUpdate processes the text message sent to bot
 func processUpdate(text string, chatID int64) {
 	if util.IsUrl(text) {
-		if strings.HasPrefix(text, "https://open.spotify.com") && config.HasZSpotify {
-			processMusic(text, chatID, music.ZSpotify{})
-		} else {
-			processMusic(text, chatID, music.Deemix{})
+		var processor music.Downloader = music.Deemix{}
+		if strings.HasPrefix(text, "https://open.spotify.com") {
+			if config.HasZSpotify {
+				processor = music.ZSpotify{}
+			} else if config.HasCustomSpotifyDownloader {
+				processor = music.CustomSpotify{ProgramName: config.Config.CustomSpotifyDownloaderName}
+			}
 		}
+		processMusic(text, chatID, processor)
 	} else {
 		processTrackSearch(text, chatID)
 	}

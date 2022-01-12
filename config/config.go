@@ -31,6 +31,8 @@ const SearchHelpMessage = "You can search using inline queries; Just press one o
 var Config struct {
 	// ZSpotifyCredentials is the file of `credentials.json` in raw json
 	ZSpotifyCredentials json.RawMessage `json:"zspotify_credentials"`
+	// The program name of custom spotify downloader
+	CustomSpotifyDownloaderName string `json:"custom_spotify_downloader_name"`
 	// Your telegram bot token
 	BotToken string `json:"bot_token"`
 	// Authorized users to use this bot. Use @myidbot to get your ID
@@ -42,6 +44,9 @@ var users map[int64]struct{}
 
 // HasZSpotify indicates if user has spotify
 var HasZSpotify = false
+
+// HasCustomSpotifyDownloader checks if the user has a custom downloader for spotify
+var HasCustomSpotifyDownloader = false
 
 // LoadConfig loads the config file from a location
 func LoadConfig(location string) {
@@ -59,8 +64,14 @@ func LoadConfig(location string) {
 		users[user] = struct{}{}
 	}
 	Config.Users = nil
-	// Check is user has ZSpotify
-	if len(Config.ZSpotifyCredentials) != 0 {
+	// Check is user has ZSpotify or custom downloader
+	if Config.CustomSpotifyDownloaderName != "" {
+		_, err = exec.LookPath(Config.CustomSpotifyDownloaderName)
+		if err == nil {
+			HasCustomSpotifyDownloader = true
+			log.Println("Detected custom Spotify downloader!")
+		}
+	} else if len(Config.ZSpotifyCredentials) != 0 {
 		_, err = exec.LookPath("zspotify")
 		if err == nil {
 			HasZSpotify = true
