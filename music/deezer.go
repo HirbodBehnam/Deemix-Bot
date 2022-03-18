@@ -18,7 +18,7 @@ const albumSearchEndpoint = "https://api.deezer.com/search/album"
 const maxSearchEntries = 10
 
 // SearchTrack searches the deezer for a track by keyword
-func SearchTrack(keyword string) ([]SearchEntry, error) {
+func SearchTrack(keyword string) ([]Track, error) {
 	// Build the request and do it
 	req, err := http.NewRequest("GET", trackSearchEndpoint, nil)
 	if err != nil {
@@ -39,7 +39,7 @@ func SearchTrack(keyword string) ([]SearchEntry, error) {
 		return nil, err
 	}
 	// Convert the raw response to SearchResult array
-	result := make([]SearchEntry, 0, maxSearchEntries)
+	result := make([]Track, 0, maxSearchEntries)
 	for i, entry := range respRaw.Data {
 		if i >= maxSearchEntries { // limit entries of result
 			break
@@ -57,7 +57,7 @@ func SearchTrack(keyword string) ([]SearchEntry, error) {
 }
 
 // SearchAlbum searches the deezer for an album by keyword
-func SearchAlbum(keyword string) ([]SearchEntry, error) {
+func SearchAlbum(keyword string) ([]Album, error) {
 	// Build the request and do it
 	req, err := http.NewRequest("GET", albumSearchEndpoint, nil)
 	if err != nil {
@@ -77,12 +77,8 @@ func SearchAlbum(keyword string) ([]SearchEntry, error) {
 	if err != nil {
 		return nil, err
 	}
-	resultInterface := make([]SearchEntry, 0, maxSearchEntries)
-	for i := range result.Data {
-		if i > maxSearchEntries {
-			break
-		}
-		resultInterface = append(resultInterface, result.Data[i])
+	if len(result.Data) > maxSearchEntries {
+		result.Data = result.Data[:maxSearchEntries]
 	}
-	return resultInterface, nil
+	return result.Data, nil
 }

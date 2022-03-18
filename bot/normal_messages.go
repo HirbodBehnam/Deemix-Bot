@@ -79,7 +79,7 @@ func processAlbumSearch(text string, chatID int64) {
 }
 
 // sendSearchResult sends the search result to user
-func sendSearchResult(chatID int64, data []music.SearchEntry, err error) {
+func sendSearchResult[E music.SearchEntry](chatID int64, data []E, err error) {
 	// At first check the error
 	if err != nil {
 		_, _ = bot.Send(tgbotapi.NewMessage(chatID, "Cannot search the keyword :|"))
