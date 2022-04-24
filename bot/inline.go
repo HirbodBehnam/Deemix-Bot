@@ -37,7 +37,7 @@ func processInlineAlbumSearch(ID, album string) {
 }
 
 // answerInlineSearch answers a callback query
-func answerInlineSearch(ID string, data []music.SearchEntry, err error) {
+func answerInlineSearch[E music.SearchEntry](ID string, data []E, err error) {
 	// At first check the error
 	if err != nil {
 		answerInlineQuery(ID, []interface{}{
