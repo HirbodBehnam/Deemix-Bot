@@ -2,11 +2,9 @@ package bot
 
 import (
 	"Deemix-Bot/config"
-	"Deemix-Bot/music"
 	"Deemix-Bot/util"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
-	"strings"
 )
 
 // StartBot starts the telegram bot with config.Config.BotToken as argument
@@ -77,15 +75,12 @@ func StartBot() {
 // processUpdate processes the text message sent to bot
 func processUpdate(text string, chatID int64) {
 	if util.IsUrl(text) {
-		var processor music.Downloader = music.Deemix{}
-		if strings.HasPrefix(text, "https://open.spotify.com") {
-			if config.HasZSpotify {
-				processor = music.ZSpotify{}
-			} else if config.HasCustomSpotifyDownloader {
-				processor = music.CustomSpotify{ProgramName: config.Config.CustomSpotifyDownloaderName}
+		for _, downloader := range config.Downloaders {
+			if downloader.IsValidUrl(text) {
+				processMusic(text, chatID, downloader)
+				return
 			}
 		}
-		processMusic(text, chatID, processor)
 	} else {
 		processTrackSearch(text, chatID)
 	}

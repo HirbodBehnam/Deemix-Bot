@@ -1,29 +1,37 @@
 package music
 
 import (
-	"Deemix-Bot/config"
+	"Deemix-Bot/types"
 	"bytes"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"path"
+	"strings"
 )
 
-type ZSpotify struct{}
+type ZSpotify struct {
+	ZSpotifyCredentials []byte
+}
+
+// IsValidUrl simply checks if the link starts with spotify domain
+func (ZSpotify) IsValidUrl(u string) bool {
+	return strings.HasPrefix(u, "https://open.spotify.com")
+}
 
 // Download tries to download a spotify/deezer track from deezer
 // We return a pointer to ensure that user don't recklessly call TempDir.Delete on result
-func (ZSpotify) Download(u string) (*TempDir, error) {
+func (z ZSpotify) Download(u string) (types.TempDir, error) {
 	// Create a temp dir
 	dirName, err := ioutil.TempDir("", "zspotify*")
 	if err != nil {
-		return nil, err
+		return types.TempDir{}, err
 	}
-	result := &TempDir{Address: dirName}
+	result := types.TempDir{Address: dirName}
 	// Add the files to this path needed for zspotify
 	credentialPath := path.Join(dirName, "credentials.json")
-	_ = os.WriteFile(credentialPath, config.Config.ZSpotifyCredentials, 0666)
+	_ = os.WriteFile(credentialPath, z.ZSpotifyCredentials, 0666)
 	// Download the file
 	cmd := exec.Command("zspotify",
 		"--download-format", "mp3",
@@ -37,7 +45,7 @@ func (ZSpotify) Download(u string) (*TempDir, error) {
 	if err != nil {
 		log.Printf("Error on excuting zspotify: %s\n", stderr.String())
 		result.Delete()
-		return nil, err
+		return types.TempDir{}, err
 	}
 	// Return the directory
 	return result, nil

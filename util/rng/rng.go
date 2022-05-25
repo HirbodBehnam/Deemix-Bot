@@ -16,3 +16,12 @@ func QueryToken() string {
 	_, _ = rand.Read(resultBytes[8:])
 	return hex.EncodeToString(resultBytes)
 }
+
+// RandomFilename will return a random filename
+//
+// Basically, it's just a random byte filler with convert to hex
+func RandomFilename() string {
+	resultBytes := make([]byte, 8)
+	_, _ = rand.Read(resultBytes)
+	return hex.EncodeToString(resultBytes)
+}

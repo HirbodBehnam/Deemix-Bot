@@ -1,13 +1,15 @@
 package config
 
 import (
+	"Deemix-Bot/music"
+	"Deemix-Bot/types"
 	"encoding/json"
 	"log"
 	"os"
 	"os/exec"
 )
 
-const Version = "1.4.0"
+const Version = "1.5.0"
 
 const StartMessage = "Apparently, you were worthy enough that you can use this bot! Use /help for more info"
 
@@ -32,7 +34,12 @@ var Config struct {
 	// ZSpotifyCredentials is the file of `credentials.json` in raw json
 	ZSpotifyCredentials json.RawMessage `json:"zspotify_credentials"`
 	// The program name of custom spotify downloader
-	CustomSpotifyDownloaderName string `json:"custom_spotify_downloader_name"`
+	CustomDownloaders []struct {
+		Name      string `json:"name"`
+		UrlPrefix string `json:"url_prefix"`
+	} `json:"custom_downloaders"`
+	// A list of websites which the bot can download musics from. (direct link)
+	DirectDownloadHosts []string `json:"direct_download_hosts"`
 	// Your telegram bot token
 	BotToken string `json:"bot_token"`
 	// Authorized users to use this bot. Use @myidbot to get your ID
@@ -42,11 +49,8 @@ var Config struct {
 // Private map to check authorized users
 var users map[int64]struct{}
 
-// HasZSpotify indicates if user has spotify
-var HasZSpotify = false
-
-// HasCustomSpotifyDownloader checks if the user has a custom downloader for spotify
-var HasCustomSpotifyDownloader = false
+// Downloaders is a list of all available downloaders for application
+var Downloaders = make([]types.Downloader, 0)
 
 // LoadConfig loads the config file from a location
 func LoadConfig(location string) {
@@ -64,20 +68,29 @@ func LoadConfig(location string) {
 		users[user] = struct{}{}
 	}
 	Config.Users = nil
-	// Check is user has ZSpotify or custom downloader
-	if Config.CustomSpotifyDownloaderName != "" {
-		_, err = exec.LookPath(Config.CustomSpotifyDownloaderName)
+	// Check is user has other downloaders
+	for _, downloader := range Config.CustomDownloaders {
+		_, err = exec.LookPath(downloader.Name)
 		if err == nil {
-			HasCustomSpotifyDownloader = true
-			log.Println("Detected custom Spotify downloader!")
-		}
-	} else if len(Config.ZSpotifyCredentials) != 0 {
-		_, err = exec.LookPath("zspotify")
-		if err == nil {
-			HasZSpotify = true
-			log.Println("Detected zspotify!")
+			log.Println("Detected custom downloader:", downloader.Name)
+			Downloaders = append(Downloaders, music.CustomDownloader{
+				ProgramName: downloader.Name,
+				UrlPrefix:   downloader.UrlPrefix,
+			})
 		}
 	}
+	if len(Config.ZSpotifyCredentials) != 0 {
+		_, err = exec.LookPath("zspotify")
+		if err == nil {
+			log.Println("Detected zspotify!")
+			Downloaders = append(Downloaders, music.ZSpotify{ZSpotifyCredentials: Config.ZSpotifyCredentials})
+		}
+	}
+	for _, downloadHost := range Config.DirectDownloadHosts {
+		Downloaders = append(Downloaders, music.DirectFile{UrlPrefix: downloadHost})
+	}
+	// Always add deemix at last
+	Downloaders = append(Downloaders, music.Deemix{})
 }
 
 // CheckAuthorizedUser checks if userId is available in users map and is allowed to use the bot

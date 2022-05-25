@@ -4,9 +4,6 @@ import (
 	"Deemix-Bot/util"
 	"Deemix-Bot/util/rng"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"io/fs"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -114,38 +111,4 @@ func (a Album) Article() tgbotapi.InlineQueryResultArticle {
 	row.Description = "Artist: " + a.Artist.Name + "\nTracks: " + strconv.Itoa(a.TracksCount)
 	row.ThumbURL = a.Cover
 	return row
-}
-
-// Downloader is an interface to download a song from a provider
-type Downloader interface {
-	Download(u string) (*TempDir, error)
-}
-
-// TempDir is a simple structure which can hold the path to a temporary directory
-type TempDir struct {
-	// Address of the directory
-	Address string
-}
-
-// Delete deletes the temporary directory
-func (d TempDir) Delete() {
-	if d.Address != "" {
-		_ = os.RemoveAll(d.Address)
-	}
-}
-
-// GetMusics gets the downloaded music filenames from temp dir
-// If there is an error, returns nil
-func (d TempDir) GetMusics() []string {
-	result := make([]string, 0)
-	err := filepath.WalkDir(d.Address, func(path string, d fs.DirEntry, err error) error {
-		if !d.IsDir() && strings.HasSuffix(d.Name(), ".mp3") {
-			result = append(result, path)
-		}
-		return nil
-	})
-	if err != nil {
-		return nil
-	}
-	return result
 }

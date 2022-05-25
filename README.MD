@@ -6,8 +6,9 @@ A simple bot to upload downloaded musics from Deemix to Telegram.
 
 * Full deemix features
 * Builtin Deezer search
-* Very lightweight bot
+* Lightweight
 * Partial ZSpotify support
+* Custom downloader support
 
 ## Installing
 
@@ -22,13 +23,18 @@ Just use `go build` to build the bot.
 
 ### Config
 
-The config file contains two fields:
+The config file contains some fields:
 
 1. `bot_token`: Which is simply your Telegram bot token which must be acquired from @BotFather
 2. `users`: An array of int which is the user id of people who you want to allow working with this bot. You can get your
    ID using @myidbot. If you leave this array empty, the bot will be made public and anyone can access it.
 3. `zspotify_credentials`: If you want ZSpotify support, run ZSpotify once to register your account then it creates a
    file called `credentials.json`. Add the content of this file to this key in config.
+4. `custom_downloaders`: This is an array of objects which contain two keys: `name` and `url_prefix`. `name`
+   is the application name which must be in path in order to run it. Also, bot will only send urls which are starting
+   with `url_prefix` to the downloader and falls back to other downloaders if they don't match with it.
+5. `direct_download_hosts`: You can also define some hosts in order to make the bot accept direct download links from
+   them. These hosts can be defined as an array of strings in this key.
 
 #### Making Spotify links work with Deemix
 
@@ -59,6 +65,14 @@ After, run `zspotify -s` and fill the account credentials for the first time. Af
 anymore.
 
 <sub><sup>This help was written for ZSpotify commit `606125d`</sup></sub>
+
+#### Adding a custom downloader
+
+You can create your own downloaders to integrate it with this bot! To do so, create an executable and put it in your
+path. The executable must accept an url as it's first argument. It should also save the music file in it's working
+directory.
+
+If an error occurs, it should return a non-zero status code.
 
 ## How it works?
 

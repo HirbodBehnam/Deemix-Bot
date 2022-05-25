@@ -2,13 +2,14 @@ package bot
 
 import (
 	"Deemix-Bot/music"
+	"Deemix-Bot/types"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"strings"
 )
 
 // processMusic tries to download a music
-func processMusic(text string, chatID int64, downloader music.Downloader) {
+func processMusic(text string, chatID int64, downloader types.Downloader) {
 	// Process report
 	msg, err := bot.Send(tgbotapi.NewMessage(chatID, "Searching and downloading..."))
 	if err != nil {
