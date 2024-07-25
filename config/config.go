@@ -9,7 +9,7 @@ import (
 	"os/exec"
 )
 
-const Version = "1.5.0"
+const Version = "1.5.1"
 
 const StartMessage = "Apparently, you were worthy enough that you can use this bot! Use /help for more info"
 
