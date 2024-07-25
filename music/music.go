@@ -52,7 +52,7 @@ func GetMusicMetadata(path string) (Metadata, error) {
 	}
 	// Get pic
 	var pic []byte
-	if m.Picture() != nil || m.Picture().Ext == "jpeg" || m.Picture().Ext == "jpg" {
+	if m.Picture() != nil && (m.Picture().Ext == "jpeg" || m.Picture().Ext == "jpg") {
 		pic = resizeThumbnail(m.Picture().Data)
 	}
 	// Get duration if needed
